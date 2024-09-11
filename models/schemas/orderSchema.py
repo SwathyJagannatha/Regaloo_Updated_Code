@@ -4,11 +4,16 @@ from . import ma
 class OrderSchema(ma.Schema):
     id = fields.Integer(required = False)
     date = fields.Date(required = False)
-    customer_id = fields.Integer(required=True)
+    customeraccnt_id = fields.Integer(required=True)
     products = fields.Nested('ProductSchema',many=True)
-    customer = fields.Nested('CustomerOrderSchema')
+    product_ids = fields.List(fields.Integer())
+    customer = fields.Nested('CustomerSchema')
+    status = fields.String(missing = 'pending')
+    total_amt = fields.Decimal(as_string=True)
+    delivery_address = fields.String(required=False)
+
     class Meta:
-        fields = ('id','date','customer_id','products','customer')
+        fields = ('id','date','customeraccnt_id','products','status','total_amt','delivery_address')
 
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many = True)

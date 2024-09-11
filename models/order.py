@@ -9,11 +9,13 @@ class Order(Base):
     __tablename__='Orders'
     id : Mapped[int] = mapped_column(primary_key = True)
     date : Mapped[str] = mapped_column(db.Date,nullable=False)
-    customer_id : Mapped[int] = mapped_column(db.ForeignKey('Customers.id',ondelete='CASCADE'))
-
+    customeraccnt_id : Mapped[int] = mapped_column(db.ForeignKey('CustomerAccount.id',ondelete='CASCADE'))
+    status: Mapped[str] = mapped_column(db.String(50))
+    delivery_address: Mapped[str] = mapped_column(db.String(150),nullable=True)
+    total_amount: Mapped[float] = mapped_column(db.Float)
     # Many to one : Order and customer
 
-    customer : Mapped["Customer"] = db.relationship(back_populates="orders")
+    customer_account : Mapped["CustomerAccount"] = db.relationship("CustomerAccount",back_populates="orders")
 
     # Many-to many : products with no back_populates
 

@@ -3,7 +3,7 @@ info:
   title: "API name"
   description: "Brief description"
   version: "1.0.0"
-host: "127.0.0.1:5000" #working on local host
+host: "e-comm-new-1.onrender.com" #working on local host
 schemes:
   - "http"
 consumes:

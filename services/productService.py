@@ -4,8 +4,7 @@ from database import db
 from sqlalchemy import select,delete
 
 def save(product_data):
-    new_product = Product(name = product_data["name"], price = product_data["price"])
-
+    new_product = Product(name = product_data["name"], price = product_data["price"],description = product_data["description"],stock_qty = product_data["stock_qty"])
     db.session.add(new_product)
     db.session.commit()
     db.session.refresh(new_product)
@@ -33,9 +32,9 @@ def delete_product(id):
 
         db.session.delete(prod)
         db.session.commit()
-        return prod
+        return prod,201
     else:
-        return None
+        return {"Message":"Product deletion failed"},404
     
 def update_product(id,data):
     try:

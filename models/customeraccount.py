@@ -7,6 +7,10 @@ class CustomerAccount(Base):
     id : Mapped[int] = mapped_column(primary_key = True)
     username : Mapped[str] = mapped_column(db.String(255),nullable=False,unique=True)
     password : Mapped[str] = mapped_column(db.String(255),nullable=False)
-    customer_id : Mapped[int] = mapped_column(db.ForeignKey('Customers.id',ondelete='CASCADE'))
+    customer_id : Mapped[int] = mapped_column(db.ForeignKey('Customers.id'))
     
     customer : Mapped["Customer"] = db.relationship("Customer",back_populates="customeraccount")
+    orders: Mapped[List["Order"]] = db.relationship("Order",back_populates="customer_account",cascade="all, delete-orphan")
+
+    role_id : Mapped[int] = mapped_column(db.ForeignKey('Roles.id'))
+    role: Mapped['Role'] = db.relationship("Role")

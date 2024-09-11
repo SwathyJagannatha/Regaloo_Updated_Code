@@ -5,18 +5,6 @@ from marshmallow import ValidationError
 from caching import cache
 from utils.util import token_required,admin_required
 
-def login():
-    try:
-        credentials = request.json
-        token = customerService.login(credentials['username'], credentials['password'])
-    except KeyError:
-        return jsonify({'messages':'Invalid payload, expecting username and password'}), 401
-    
-    if token:
-        return jsonify(token), 200
-    else:
-        return jsonify({'messages':'Invalid username or password'}), 401
-
 def save(): #name the controller will always be the same as the service function
 
     try:
@@ -27,9 +15,9 @@ def save(): #name the controller will always be the same as the service function
         return jsonify(e.messages), 400
     
     customer_saved = customerService.save(customer_data)
-    return customer_schema.jsonify(customer_data), 201
+    return customer_schema.jsonify(customer_saved), 201
 
-@admin_required
+#@admin_required
 @cache.cached(timeout=60)
 def find_all():
     all_customers = customerService.find_all()

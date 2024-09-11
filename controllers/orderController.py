@@ -14,14 +14,57 @@ def save():
     new_order = orderService.save(order_data)
     return order_schema.jsonify(new_order),201
 
-@cache.cached(timeout=60)
+def create_order():
+    try:
+        order_data = order_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages),400
 
+    response,status = orderService.create_order(order_data)
+
+    if status != 201:
+        return jsonify(response),status 
+    return order_schema.jsonify(response), status
+
+def send_confirm_email(custaccnt_id,order_id):
+    try:
+        order_data = order_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages),400
+
+    response,status = orderService.send_confirm_email(custaccnt_id,order_id)
+
+    if status != 201:
+        return jsonify(response),status 
+    return order_schema.jsonify(response), status
+
+
+def confirm_gift(token):
+    response,status = orderService.confirm_gift(token)
+    return jsonify(response), status
+
+def cancel_gift(token):
+    response,status = orderService.cancel_gift(token)
+    return jsonify(response), status
+
+def address_update(token):
+    response,status = orderService.address_update(token)
+    return jsonify(response)
+
+def submit_address(token):
+    response,status = orderService.submit_address(token)
+    return response
+
+@cache.cached(timeout=60)
 def find_all():
     all_orders = orderService.find_all()
     return orders_schema.jsonify(all_orders),200    
     
 def find_by_id(id):
     orders = orderService.find_by_id(id)
+
+    if not orders:
+        return {"Message" : "Order with specified id doesnt exist"},404
     return orders_schema.jsonify(orders),200
 
 @user_token_wrapper
@@ -39,12 +82,13 @@ def find_by_customer_email():
     return orders_schema.jsonify(orders),200
 
 def delete_order(id):
-    order = orderService.delete_order(id)
-    if not order:
-        return jsonify({"message": "Sorry,Order ot found!!"}),404
+    response,status = orderService.delete_order(id)
+    if status!=201:
+        #return jsonify({"message": "Sorry,Order ot found!!"}),404
+        return jsonify(response),status
     else:
         print("Order deleted successfully!!")
-        return order_schema.jsonify(order),200
+        return order_schema.jsonify(response),status
     
 def update_order(id):
     try:

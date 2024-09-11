@@ -1,32 +1,149 @@
 from database import db
 from models.customer import Customer 
 from models.customeraccount import CustomerAccount
+from models.role import Role
 from models.order import Order
 from sqlalchemy import select
 from utils.util import encode_token
 from sqlalchemy.orm import joinedload
+from werkzeug.security import check_password_hash
+
+def login(username,password): #login using unique info so we dont query mutiple users
+    query = select(CustomerAccount).where(CustomerAccount.username == username)
+    customeraccnt = db.session.execute(query).scalar_one_or_none()
+    #query cust table for a customer with password and username
+
+    if customeraccnt and check_password_hash(customeraccnt.password , password):
+        # if e have  a customer associated with username, validate the password
+        auth_token = encode_token(customeraccnt.id,customeraccnt.role.role_name)
+
+        response = {
+            "status": "success",
+            "message" : "Successfully Logged In",
+            "auth_token" : auth_token
+        }
+        return response
+    
+    else:
+        response = {
+            "status" : "fail",
+            "message" : "Invalid username or password"
+        }
+        return response 
+
+def masked_password(password):
+    return '*' * len(password)
+    
+def logout():
+    pass
+
+def signup(custaccount_data):
+    result = create_custaccnt(custaccount_data)
+    return result,201
 
 def save(customeraccount_data):
-    customer = Customer.query.get(customeraccount_data['customer_id'])
-    if not customer:
-        return {"error": "Customer with the given ID does not exist"}, 400
+    cust_id = customeraccount_data.get('customer_id')
+    username =customeraccount_data.get('username')
+    password = customeraccount_data.get('password')
+    
+    cust_data = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
+
+    if not cust_data:
+        return {"Message: Customer with that id doesnt exist"},404
+    
+    find_user = select(CustomerAccount).where(CustomerAccount.username == username)
+
+    if find_user:
+        return {"Message: CustomerAccount with that username already exists"},400
     
     new_customeraccnt = CustomerAccount(
         password = customeraccount_data['password'],
         username = customeraccount_data['username'],
-        customer_id = customeraccount_data['customer_id']
+        customer_id = customeraccount_data['customer_id'],
+        role_id = customeraccount_data['role_id']
     )
+    try:
+        db.session.add(new_customeraccnt)
+        db.session.commit()
+        db.session.refresh(new_customeraccnt)
 
-    db.session.add(new_customeraccnt)
-    db.session.commit()
-    db.session.refresh(new_customeraccnt)
-    return new_customeraccnt 
+        return new_customeraccnt,201
+
+    except Exception as e:
+        return {"Message: CustomerAccount creation failed!"}
+
+def create_custaccnt(customeraccnt_data):
+    customer_id = customeraccnt_data['customer_id']
+    username =  customeraccnt_data['username']
+    password = customeraccnt_data.get('password')
+    role_id = customeraccnt_data.get('role_id')
+
+    query = select(Customer).where(Customer.id == customer_id)
+    customer=db.session.execute(query).scalar_one_or_none()
+
+    if not customer:
+        return {
+            "status":"fail",
+            "message": "Customer not found"
+            },404
+    
+    query = select(CustomerAccount).where(CustomerAccount.username == username)
+    username_info=db.session.execute(query).scalar_one_or_none()
+
+    if username_info:
+        return {
+            "status":"fail",
+            "message": "Username already exists in our system"
+            },404
+    
+    query = select(Role).where(Role.id == role_id)
+    role=db.session.execute(query).scalar_one_or_none()
+
+    if not role:
+        return {
+            "status":"fail",
+            "message": "Provided role doesnt exist"
+            },404
+    
+    new_customeraccnt = CustomerAccount(
+        password = password,
+        username = username,
+        customer_id = customer_id,
+        role_id = role_id
+    )
+    try:
+        db.session.add(new_customeraccnt)
+        db.session.commit()
+        db.session.refresh(new_customeraccnt)
+        return new_customeraccnt,201
+    
+    except Exception as e:
+        return{
+            "status":"fail",
+            "message": f"Customer account creation failed {str(e)}"
+        }
 
 def find_all():
     query = select(CustomerAccount)
     all_customeraccnts = db.session.execute(query).scalars().all()
-    return all_customeraccnts
 
+    if not all_customeraccnts:
+        return {"Message: Could not find customer accounts"},404
+    
+    return all_customeraccnts,201
+
+def get_account_by_id(id):
+  try:
+    query = select(CustomerAccount).where(CustomerAccount.id == id)
+    customeraccnt = db.session.execute(query).scalar()
+
+    if not customeraccnt:
+        return {"Message: Customer Account was not found!!"},404   
+    return customeraccnt,201
+  
+  except Exception as e:
+    return {"Message:Could not find customer with this id"},404
+  
 def delete_customeraccnt(id):
     query = select(CustomerAccount).options(joinedload(CustomerAccount.customer)).where(CustomerAccount.id == id)
     customeraccnt=db.session.execute(query).scalar()
@@ -34,14 +151,17 @@ def delete_customeraccnt(id):
     if customeraccnt:
         db.session.delete(customeraccnt)
         db.session.commit()
-        return customeraccnt
+        return customeraccnt,201
     else:
-        return None
+        return {"Message: Could not find out customeraccount with the specific id"},404
 
 def update_customeraccnt(id,data):
     try:
         query = select(CustomerAccount).where(CustomerAccount.id == id)
         customer=db.session.execute(query).scalar()
+
+        if not customer:
+            return {"Message: Customer with the specified id doesnt exist"},404
 
         customer.username = data.get("username",customer.username)
         customer.password = data.get("password", customer.password)

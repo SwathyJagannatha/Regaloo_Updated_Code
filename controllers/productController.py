@@ -8,7 +8,7 @@ def save():
     try:
         product_data = product_schema.load(request.json)
     except ValidationError as err:
-        return jsonify(err.message),400
+        return jsonify(err.messages),400
     
     try:
         product_save = productService.save(product_data)
@@ -27,12 +27,12 @@ def search_product():
     return products_schema.jsonify(searched_item)
 
 def delete_product(id):
-    product = productService.delete_product(id)
-    if not product:
-        return jsonify({"message": "Sorry,Product is not available!!"}),404
+    response,status = productService.delete_product(id)
+    if status!=201:
+        return jsonify({f"message": "Sorry,Product with id specified is not available!!"}),status
     else:
         print("Product deleted successfully!!")
-        return product_schema.jsonify(product),200
+        return product_schema.jsonify(response),status
     
 def update_product(id):
     try:
