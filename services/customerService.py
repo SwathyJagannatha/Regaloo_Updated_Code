@@ -12,9 +12,12 @@ def save(customer_data):
     )
 
     db.session.add(new_customer)
+    # customer_id = new_customer.customer_id --> for sending to front end
     db.session.commit()
     db.session.refresh(new_customer)
     return new_customer 
+
+# retrun jsonify({"message":"New customer sucessfulyy added","customer_id":customer_id}),201
 
 def find_all():
     query = select(Customer)

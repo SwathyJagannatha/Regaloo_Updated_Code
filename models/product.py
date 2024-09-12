@@ -8,5 +8,6 @@ class Product(Base):
     price : Mapped[float] = mapped_column(db.Float())
     description: Mapped[str] = mapped_column(db.String(255))
     stock_qty : Mapped[int] = mapped_column(db.Integer())
+    # 
 
     

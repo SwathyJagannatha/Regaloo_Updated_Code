@@ -98,12 +98,6 @@ def create_order(data):
     db.session.commit()
     db.session.refresh(latest_order)
 
-    # Add entries to order_product
-    # for prod in prod_arr:
-    #     db.session.execute(order_product.insert().values(order_id=latest_order.id, product_id=prod.id, quantity=prod.stock_qty))
-    
-    # db.session.commit()
-
     #order_id and customeraccnt_id
     send_confirm_email(latest_order.customeraccnt_id,latest_order.id)
 
