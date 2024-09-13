@@ -32,6 +32,7 @@ def create_app(config_name):
 
     app.config.from_object(f'config.{config_name}')
     app.config['SECRET_KEY'] = 'aunf gvkq wsfe pndd'
+    app.config['SERVER_NAME'] = 'regaloowebsite-1.onrender.com'
 
     #mail = Mail(app)
     mail.init_app(app)
