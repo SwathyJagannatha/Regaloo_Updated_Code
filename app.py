@@ -9,11 +9,13 @@ from flask_cors import CORS
 from models.customer import Customer
 from models.product import Product
 from models.order import Order
+from models.role import Role
 
 from routes.customerBP import customer_blueprint
 from routes.productBP import product_blueprint
 from routes.orderBP import order_blueprint
 from routes.customeraccntBP import customeraccnt_blueprint
+from routes.roleBP import role_blueprint
 
 from flask_mail import Mail,Message
 from extensions import mail
@@ -50,6 +52,7 @@ def blueprint_config(app):
     app.register_blueprint(product_blueprint, url_prefix='/products')
     app.register_blueprint(order_blueprint, url_prefix='/orders')
     app.register_blueprint(customeraccnt_blueprint, url_prefix='/customeraccnt')
+    app.register_blueprint(role_blueprint, url_prefix='/roles')
     app.register_blueprint(swagger_blueprint,url_prefix=SWAGGER_URL)
 
 def rate_limit_config():
