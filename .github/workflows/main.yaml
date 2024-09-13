@@ -1,4 +1,4 @@
-name: Flask CI/CD
+name: Regaloo App
 
 on:
   push:
@@ -57,5 +57,15 @@ jobs:
       
       - name: Run the tests
         run: python -m unittest discover -s tests -p 'test_a*.py'
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+        - name: Deploy the App
+          env:
+            deploy_url: ${{secrets.RENDER_DEPLOY_HOOK_URL}}
+          run: curl "$deploy_url"
 
 
