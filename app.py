@@ -4,6 +4,7 @@ from models.schemas import ma
 from limiter import limiter
 from caching import cache
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 from models.customer import Customer
 from models.product import Product
@@ -34,8 +35,11 @@ def create_app(config_name):
     mail.init_app(app)
     db.init_app(app)
     ma.init_app(app)
-    limiter.init_app(app)
+    #limiter.init_app(app)
     cache.init_app(app)
+    #CORS(app)
+
+    blueprint_config(app)
 
     print('Running')
     return app
@@ -53,9 +57,10 @@ def rate_limit_config():
     limiter.limit("20 per day")(order_blueprint)
 
 
-app = create_app('DevelopmentConfig')
+# app = create_app('DevelopmentConfig')
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+    app = create_app('ProductionConfig')
 
     blueprint_config(app)
 
