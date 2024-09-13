@@ -37,8 +37,8 @@ def create_app(config_name):
     ma.init_app(app)
     #limiter.init_app(app)
     cache.init_app(app)
-    #CORS(app)
-    CORS(app,resources={r"/*": {"origins": "http://localhost:5173"}})
+    CORS(app)
+    # CORS(app,resources={r"/*": {"origins": "http://localhost:5173"}})
 
     blueprint_config(app)
 
