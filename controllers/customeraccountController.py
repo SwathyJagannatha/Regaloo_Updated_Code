@@ -68,7 +68,7 @@ def create_custaccnt():
 
     if status != 201:
         return jsonify(response),status
-    return customeraccnt_schema.jsonify(account_data), 201
+    return customeraccnt_schema.jsonify(account_data), status
 
 
 @cache.cached(timeout=60)
