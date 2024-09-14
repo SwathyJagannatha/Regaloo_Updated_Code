@@ -12,7 +12,7 @@ class ProductionConfig:
 
      # Mail configuration
     MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 465
+    MAIL_PORT = 587 #465
     MAIL_USE_SSL = True
     MAIL_USERNAME = 'swaj718@gmail.com'
     MAIL_PASSWORD = 'aunf gvkq wsfe pndd'

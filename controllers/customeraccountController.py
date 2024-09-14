@@ -72,7 +72,7 @@ def create_custaccnt():
 
 
 @cache.cached(timeout=60)
-@admin_required
+# @token_required
 def find_all():
     all_customers = customeraccountService.find_all()
     return customeraccnts_schema.jsonify(all_customers),200

@@ -34,14 +34,12 @@ def create_app(config_name):
     app.config['SECRET_KEY'] = 'aunf gvkq wsfe pndd'
     app.config['SERVER_NAME'] = 'regaloowebsite-1.onrender.com'
 
-    #mail = Mail(app)
     mail.init_app(app)
     db.init_app(app)
     ma.init_app(app)
     #limiter.init_app(app)
     cache.init_app(app)
     CORS(app)
-    # CORS(app,resources={r"/*": {"origins": "http://localhost:5173"}})
 
     blueprint_config(app)
 
