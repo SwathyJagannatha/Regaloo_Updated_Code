@@ -74,8 +74,10 @@ def create_custaccnt():
 @cache.cached(timeout=60)
 # @token_required
 def find_all():
-    all_customers = customeraccountService.find_all()
-    return customeraccnts_schema.jsonify(all_customers),200
+    response,status = customeraccountService.find_all()
+    if status != 201:
+        return jsonify(response),status
+    return customeraccnts_schema.jsonify(response), status
 
 # def find_all_paginate():
 #     page = int(request.args.get('page'))
