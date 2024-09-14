@@ -15,7 +15,8 @@ def login(username,password): #login using unique info so we dont query mutiple 
     customeraccnt = db.session.execute(query).scalar_one_or_none()
     #query cust table for a customer with password and username
 
-    if customeraccnt and check_password_hash(customeraccnt.password , password):
+    # if customeraccnt and check_password_hash(customeraccnt.password , password):
+    if customeraccnt and customeraccnt.password == password:
         # if e have  a customer associated with username, validate the password
         auth_token = encode_token(customeraccnt.id,customeraccnt.role.role_name)
 
