@@ -86,7 +86,7 @@ def create_custaccnt(customeraccnt_data):
     query = select(Customer).where(Customer.id == customer_id)
     customer=db.session.execute(query).scalar_one_or_none()
 
-    if not customer:
+    if customer is None:
         return {
             "status":"fail",
             "message": "Customer not found"
@@ -128,14 +128,24 @@ def create_custaccnt(customeraccnt_data):
             "message": f"Customer account creation failed {str(e)}"
         }
 
+# def find_all():
+#     query = select(CustomerAccount)
+#     all_customeraccnts = db.session.execute(query).scalars().all()
+
+#     if not all_customeraccnts:
+#         return {"Message: Could not find customer accounts"},404
+    
+#     return all_customeraccnts,201
+
 def find_all():
     query = select(CustomerAccount)
     all_customeraccnts = db.session.execute(query).scalars().all()
-
-    if not all_customeraccnts:
-        return {"Message: Could not find customer accounts"},404
+    logging.debug(f"Retrieved {len(all_customeraccnts)} customer accounts")
     
-    return all_customeraccnts,201
+    if not all_customeraccnts:
+        return {"Message": "Could not find customer accounts"}, 404
+    
+    return all_customeraccnts, 201
 
 def get_account_by_id(id):
   try:
