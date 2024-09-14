@@ -45,26 +45,27 @@ def save(customeraccount_data):
     cust_id = customeraccount_data.get('customer_id')
     username =customeraccount_data.get('username')
     password = customeraccount_data.get('password')
-    
+    role_id = customeraccount_data.get('role_id', 1)
+
     query = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
     customer=db.session.execute(query).scalar_one_or_none()
     
-    if not customer:
+    if customer is None:
         return {
             "status":"fail",
             "message": "Customer not found"
             },404
     
-    find_user = select(CustomerAccount).where(CustomerAccount.username == username)
+    find_user = db.session.execute(select(CustomerAccount).where(CustomerAccount.username == username)).scalar()
 
     if find_user:
         return {"Message: CustomerAccount with that username already exists"},400
     
     new_customeraccnt = CustomerAccount(
-        password = customeraccount_data['password'],
-        username = customeraccount_data['username'],
-        customer_id = customeraccount_data['customer_id'],
-        role_id = customeraccount_data['role_id']
+        username=username,
+        password=password,
+        customer_id=cust_id,
+        role_id=role_id
     )
     try:
         db.session.add(new_customeraccnt)
@@ -74,7 +75,7 @@ def save(customeraccount_data):
         return new_customeraccnt,201
 
     except Exception as e:
-        return {"Message: CustomerAccount creation failed!"}
+        return {"Message: CustomerAccount creation failed!"},404
 
 def create_custaccnt(customeraccnt_data):
     customer_id = customeraccnt_data.get('customer_id')

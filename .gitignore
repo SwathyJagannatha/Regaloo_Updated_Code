@@ -1,5 +1,6 @@
 my_venv/
 __pycache__/
+__pycache__/customeraccountService.cpython-312.pyc
 *.py[cod]
 *$py.class
 
