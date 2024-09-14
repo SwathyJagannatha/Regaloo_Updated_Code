@@ -46,10 +46,14 @@ def save(customeraccount_data):
     username =customeraccount_data.get('username')
     password = customeraccount_data.get('password')
     
-    cust_data = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
-
-    if not cust_data:
-        return {"Message: Customer with that id doesnt exist"},404
+    query = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
+    customer=db.session.execute(query).scalar_one_or_none()
+    
+    if not customer:
+        return {
+            "status":"fail",
+            "message": "Customer not found"
+            },404
     
     find_user = select(CustomerAccount).where(CustomerAccount.username == username)
 
@@ -73,8 +77,8 @@ def save(customeraccount_data):
         return {"Message: CustomerAccount creation failed!"}
 
 def create_custaccnt(customeraccnt_data):
-    customer_id = customeraccnt_data['customer_id']
-    username =  customeraccnt_data['username']
+    customer_id = customeraccnt_data.get('customer_id')
+    username =  customeraccnt_data.get('username')
     password = customeraccnt_data.get('password')
     role_id = customeraccnt_data.get('role_id')
 
