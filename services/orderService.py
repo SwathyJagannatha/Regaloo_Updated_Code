@@ -136,7 +136,7 @@ def send_confirm_email(custaccnt_id,order_id ):
     {cancel_link}
     """
     
-    message = Message("Confirm Gift Acceptance",sender=[customer.email],recipients=[customer.email],body=email_body)
+    message = Message("Confirm Gift Acceptance",sender="swaj718@gmail.com",recipients=[customer.email],body=email_body)
     mail.send(message)
 
     #return customer,201
