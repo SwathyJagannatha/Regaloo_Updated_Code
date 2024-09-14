@@ -7,6 +7,8 @@ from sqlalchemy import select
 from utils.util import encode_token
 from sqlalchemy.orm import joinedload
 from werkzeug.security import check_password_hash
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def login(username,password): #login using unique info so we dont query mutiple users
     query = select(CustomerAccount).where(CustomerAccount.username == username)
