@@ -129,11 +129,14 @@ def send_confirm_email(custaccnt_id,order_id ):
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
 
     email_body = f"""
-    Hello {customer.name},
-    Greetings to you!!Please confirm your gift acceptance by clicking the link below:
-    {confirm_link}
-    If you do not want to accept this gift, please cancel by clicking here:
-    {cancel_link}
+    <h1>Gift Confirmation from Regaloo</h1>
+    <p>Dear {customer.name},</p>
+    <p>We are excited to let you know that a special gift has been arranged for you through our service! To proceed with receiving your gift, please confirm your acceptance by clicking the link below:</p>
+    <p><a href="{confirm_link}" style="color: blue;">Confirm My Gift</a></p>
+    <p>If you did not initiate this or wish to decline the gift, please feel free to disregard this message or <a href="{cancel_link}" style="color: red;">cancel here</a>.</p>
+    <p>Thank you for using our service, and we hope you enjoy your gift!</p>
+    <p>Warm regards,</p>
+    <p>Your Regaloo Team</p>
     """
 
     verified_sender_email = "swaj718@gmail.com"
