@@ -16,3 +16,5 @@ class ProductionConfig:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('SENDGRID_USERNAME', 'apikey')  # Defaults to 'apikey' if not set
     MAIL_PASSWORD = os.environ.get('SENDGRID_PASSWORD')  # No default to ensure security
+
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
