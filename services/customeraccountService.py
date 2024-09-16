@@ -33,14 +33,14 @@ def login(username,password): #login using unique info so we dont query mutiple 
             "customer_id" :cust_id,
             "name":customer.name
         }
-        return response
+        return response,True
     
     else:
         response = {
             "status" : "fail",
             "message" : "Invalid username or password"
         }
-        return response 
+        return response,False
 
 def masked_password(password):
     return '*' * len(password)
@@ -138,15 +138,6 @@ def create_custaccnt(customeraccnt_data):
             "status":"fail",
             "message": f"Customer account creation failed {str(e)}"
         }
-
-# def find_all():
-#     query = select(CustomerAccount)
-#     all_customeraccnts = db.session.execute(query).scalars().all()
-
-#     if not all_customeraccnts:
-#         return {"Message: Could not find customer accounts"},404
-    
-#     return all_customeraccnts,201
 
 def find_all():
     query = select(CustomerAccount)
