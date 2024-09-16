@@ -171,11 +171,13 @@ def confirm_gift(token):
             address_link = url_for('order_bp.submit_address',token = token , _external=True)
 
             email_body = f"""
-            Hello,
-            Greetings to you!!Please provide your address by clicking the link below:
+            Hello {customer.name},
+            Greetings to you!!Please provide your address for gift delivery by clicking the link below:
             {address_link}
             """
-            message = Message("Provide your delivery address",sender="swaj718@gmail.com",recipients=["swathyjagannatha308@gmail.com","swathykoolgirl@gmail.com"],body=email_body)
+
+            sender_email = "swaj718@gmail.com"
+            message = Message("Provide your delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
             mail.send(message)
 
             return {"Message": "Gift has been confirmed successfully, and address email sent"}, 201
