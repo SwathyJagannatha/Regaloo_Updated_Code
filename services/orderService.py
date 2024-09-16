@@ -152,6 +152,19 @@ def confirm_gift(token):
         data = serializer.loads(token, salt='gift-confirm', max_age=3600)  # expires in 1 hour - 3600
         order = Order.query.get(data['order_id'])
         if order:
+
+            ####### customer email update #######3
+
+            custaccntid = order.customeraccnt_id
+            customeraccnt = CustomerAccount.query.get(custaccntid)
+            customer_id = customeraccnt.customer_id
+
+            customer = Customer.query.get(customer_id)
+            print("Customer name",customer.name)
+            print("Customer email",customer.email)
+
+            ##### checking customer email access #######
+            
             order.status = 'Confirmed'
             db.session.commit()
             #return {"Message": "Gift has been confirmed successfully"},201
