@@ -9,14 +9,13 @@ from utils.util import token_required,admin_required
 def login():
     try:
         credentials = request.json
-        token = customeraccountService.login(credentials['username'], credentials['password'])
+        token, success = customeraccountService.login(credentials['username'], credentials['password'])
+        if success:
+            return jsonify({"auth_token": token, "status": "success"}), 200
+        else:
+            return jsonify({"message": "Invalid username or password", "status": "fail"}), 401  # Now returns 401 if login fails
     except KeyError:
-        return jsonify({'messages':'Invalid payload, expecting username and password'}), 401
-    
-    if token:
-        return jsonify(token), 200
-    else:
-        return jsonify({'messages':'Invalid username or password'}), 401
+        return jsonify({'message': 'Invalid payload, expecting username and password', "status": "fail"}), 400 
 
 def get_account_by_id(id):
     try:
