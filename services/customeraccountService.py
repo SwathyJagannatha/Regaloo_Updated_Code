@@ -31,7 +31,8 @@ def login(username,password): #login using unique info so we dont query mutiple 
             "message" : "Successfully Logged In",
             "auth_token" : auth_token,
             "customer_id" :cust_id,
-            "name":customer.name
+            "name":customer.name,
+            "custaccount_id": customeraccnt.id
         }
         return response,True
     
