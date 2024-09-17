@@ -123,7 +123,8 @@ def send_confirm_email(custaccnt_id,order_id ):
     print("Customer email",customer.email)
 
     s = Serializer(current_app.config['SECRET_KEY'])
-    token = s.dumps({'custaccnt_id': custaccnt_id,'order_id':order_id},salt = 'gift-confirm')
+    message_id = make_msgid()
+    token = s.dumps({'custaccnt_id': custaccnt_id,'order_id':order_id,'msg_id': message_id},salt = 'gift-confirm')
 
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
@@ -135,12 +136,11 @@ def send_confirm_email(custaccnt_id,order_id ):
     If you do not want to accept this gift, please cancel by clicking here:
     {cancel_link}
     """
-
+    
     verified_sender_email = "swaj718@gmail.com"
     message = Message("Confirm Gift Acceptance",sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
+    message.extra_headers={'Message-ID': message_id}
     mail.send(message)
-
-    #return customer,201
     pass
 
 def confirm_gift(token):
@@ -149,18 +149,14 @@ def confirm_gift(token):
         data = serializer.loads(token, salt='gift-confirm', max_age=3600)  # expires in 1 hour - 3600
         order = Order.query.get(data['order_id'])
         if order:
+            ####### customer email update #######
 
-            ####### customer email update #######3
-
-            custaccntid = order.customeraccnt_id
-            customeraccnt = CustomerAccount.query.get(custaccntid)
-            customer_id = customeraccnt.customer_id
+            customeraccnt = CustomerAccount.query.get(order.customeraccnt_id)
+            customer = Customer.query.get(customeraccnt.customer_id)
 
             customer = Customer.query.get(customer_id)
             print("Customer name",customer.name)
             print("Customer email",customer.email)
-
-            ##### checking customer email access #######
             
             order.status = 'Confirmed'
             db.session.commit()
@@ -169,15 +165,17 @@ def confirm_gift(token):
 
             email_body = f"""
             Hello {customer.name},
-            Greetings to you!!Please provide your address for gift delivery by clicking the link below:
+            Greetings to you!!Please provide your Shipping address for gift delivery by clicking the link below:
             {address_link}
             """
-
             sender_email = "swaj718@gmail.com"
-            message = Message("Provide your delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
+            message = Message("Provide your Gift delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
+            message.extra_headers ={
+                'In-Reply-To': data['msg_id'],
+                'References': data['msg_id']
+            }
             mail.send(message)
-
-            return {"Message": "Gift has been confirmed successfully, and address email sent"}, 201
+            return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
             return {"Message": "Order not found"},404
     except SignatureExpired:
