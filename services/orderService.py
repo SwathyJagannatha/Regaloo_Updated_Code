@@ -12,6 +12,7 @@ from itsdangerous import BadSignature, SignatureExpired
 from flask import current_app,url_for,render_template,request,make_response 
 from flask_mail import Message
 from extensions import mail
+from email.utils import make_msgid
 
 def save(order_data):
     new_order = Order(date=date.today(), customer_id=order_data["customer_id"])
