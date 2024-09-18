@@ -124,7 +124,6 @@ def send_confirm_email(custaccnt_id,order_id ):
     print("Customer email",customer.email)
 
     s = Serializer(current_app.config['SECRET_KEY'])
-    message_id = make_msgid()
     token = s.dumps({'custaccnt_id': custaccnt_id,'order_id':order_id,'msg_id': message_id},salt = 'gift-confirm')
 
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
@@ -139,9 +138,12 @@ def send_confirm_email(custaccnt_id,order_id ):
     """
     
     verified_sender_email = "swaj718@gmail.com"
+    message_id = make_msgid()
     message = Message("Confirm Gift Acceptance",sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
     message.extra_headers={'Message-ID': message_id}
     mail.send(message)
+
+    return message_id
     pass
 
 def confirm_gift(token):
@@ -171,9 +173,11 @@ def confirm_gift(token):
             """
             sender_email = "swaj718@gmail.com"
             message = Message("Provide your Gift delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
+
+            original_message_id = data.get('msg_id')
             message.extra_headers ={
-                'In-Reply-To': data['msg_id'],
-                'References': data['msg_id']
+                'In-Reply-To': original_message_id,
+                'References': original_message_id
             }
             mail.send(message)
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
