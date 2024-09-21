@@ -18,9 +18,11 @@ def login(username,password): #login using unique info so we dont query mutiple 
     cust_id = customeraccnt.customer_id
     query1 = select(Customer).where(Customer.id == cust_id)
     customer = db.session.execute(query1).scalar_one_or_none()
-  
+
+    print("customerid",cust_id)
+    print("customername",customer.name)
     if customeraccnt and customeraccnt.password == password:
-        # if we have  a customer associated with username, validate the password
+      
         auth_token = encode_token(customeraccnt.id,customeraccnt.role.role_name)
 
         response = {
@@ -56,8 +58,11 @@ def save(customeraccount_data):
     password = customeraccount_data.get('password')
     role_id = customeraccount_data.get('role_id', 1)
 
-    query = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
-    customer=db.session.execute(query).scalar_one_or_none()
+    # query = select(CustomerAccount).where(CustomerAccount.customer_id == cust_id)
+    # customer=db.session.execute(query).scalar_one_or_none()
+
+    customer_query = select(Customer).where(Customer.id == cust_id)
+    customer = db.session.execute(customer_query).scalar_one_or_none()
     
     if customer is None:
         return {
