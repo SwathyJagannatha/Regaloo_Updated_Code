@@ -32,12 +32,12 @@ def create_app(config_name):
 
     app.config.from_object(f'config.{config_name}')
 
-    app.config['SERVER_NAME'] = 'regaloowebsite-1.onrender.com'
+    app.config['SERVER_NAME'] = 'regaloo-updated-code.onrender.com'
 
     mail.init_app(app)
     db.init_app(app)
     ma.init_app(app)
-    #limiter.init_app(app)
+   
     cache.init_app(app)
     CORS(app)
 
@@ -59,10 +59,6 @@ def rate_limit_config():
     limiter.limit("20 per day")(product_blueprint)
     limiter.limit("20 per day")(order_blueprint)
 
-
-# app = create_app('DevelopmentConfig')
-
-# if __name__ == '__main__':
 app = create_app('ProductionConfig')
 
 with app.app_context():
