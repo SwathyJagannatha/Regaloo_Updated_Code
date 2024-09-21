@@ -137,14 +137,11 @@ def send_confirm_email(custaccnt_id,order_id ):
     {cancel_link}
     """
     
+    subject = f"Gift Confirmation for Order #{order_id}"
     verified_sender_email = "swaj718@gmail.com"
-    message_id = make_msgid()
-    message = Message("Confirm Gift Acceptance",sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
-    message.extra_headers={'Message-ID': message_id}
-    mail.send(message)
 
-    return message_id
-    pass
+    message = Message(subject,"Confirm Gift Acceptance",sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
+    mail.send(message)
 
 def confirm_gift(token):
     serializer = Serializer(current_app.config['SECRET_KEY'])
@@ -157,7 +154,6 @@ def confirm_gift(token):
             customeraccnt = CustomerAccount.query.get(order.customeraccnt_id)
             customer = Customer.query.get(customeraccnt.customer_id)
 
-            customer = Customer.query.get(customer_id)
             print("Customer name",customer.name)
             print("Customer email",customer.email)
             
@@ -171,14 +167,10 @@ def confirm_gift(token):
             Greetings to you!!Please provide your Shipping address for gift delivery by clicking the link below:
             {address_link}
             """
+            subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "swaj718@gmail.com"
-            message = Message("Provide your Gift delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
+            message = Message(subject,"Provide your Gift delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
 
-            original_message_id = data.get('msg_id')
-            message.extra_headers ={
-                'In-Reply-To': original_message_id,
-                'References': original_message_id
-            }
             mail.send(message)
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
