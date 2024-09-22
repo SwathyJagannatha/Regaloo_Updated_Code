@@ -126,21 +126,27 @@ def send_confirm_email(custaccnt_id,order_id ):
     s = Serializer(current_app.config['SECRET_KEY'])
     token = s.dumps({'custaccnt_id': custaccnt_id,'order_id':order_id},salt = 'gift-confirm')
 
+    order = Order.query.get('order_id')
+
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
     
     email_body = f"""
-    Hello {customer.name},
+    Hello {order.recipient_name},
     Greetings to you!!Please confirm your gift acceptance by clicking the link below:
     {confirm_link}
     If you do not want to accept this gift, please cancel by clicking here:
     {cancel_link}
+
+    This is gift from {order.sender_name} and this is their message to you {order.gift_message}!!
     """
+
+    print(order.recipient_email)
     
     subject = f"Gift Confirmation for Order #{order_id}"
     verified_sender_email = "swaj718@gmail.com"
 
-    message = Message(subject,sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
+    message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],body=email_body,reply_to=customer.email)
     mail.send(message)
 
 def confirm_gift(token):
@@ -164,12 +170,14 @@ def confirm_gift(token):
 
             email_body = f"""
             Hello {customer.name},
+            {order.gift_message}
             Greetings to you!!Please provide your Shipping address for gift delivery by clicking the link below:
+            
             {address_link}
             """
             subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "swaj718@gmail.com"
-            message = Message(subject,sender=sender_email,recipients=[customer.email],body=email_body)
+            message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
 
             mail.send(message)
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201

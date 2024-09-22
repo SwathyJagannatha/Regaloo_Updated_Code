@@ -13,8 +13,13 @@ class Order(Base):
     status: Mapped[str] = mapped_column(db.String(50))
     delivery_address: Mapped[str] = mapped_column(db.String(150),nullable=True)
     total_amount: Mapped[float] = mapped_column(db.Float)
-    # Many to one : Order and customer
 
+    recipient_email:Mapped[str] = mapped_column(db.String(255),nullable=False,unique=True)
+    recipient_name: Mapped[str] = mapped_column(db.String(255),nullable=False)
+    sender_name: Mapped[str] = mapped_column(db.String(255),nullable=False)
+    gift_message: Mapped[str] = mapped_column(db.String(255),nullable=False)
+
+    # Many to one : Order and customeraccount
     customer_account : Mapped["CustomerAccount"] = db.relationship("CustomerAccount",back_populates="orders")
 
     # Many-to many : products with no back_populates
