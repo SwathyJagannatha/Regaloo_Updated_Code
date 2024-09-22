@@ -62,5 +62,5 @@ def rate_limit_config():
 app = create_app('ProductionConfig')
 
 with app.app_context():
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
