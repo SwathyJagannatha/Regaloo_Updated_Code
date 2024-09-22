@@ -140,7 +140,7 @@ def send_confirm_email(custaccnt_id,order_id ):
     subject = f"Gift Confirmation for Order #{order_id}"
     verified_sender_email = "swaj718@gmail.com"
 
-    message = Message(subject,"Confirm Gift Acceptance",sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
+    message = Message(subject,sender=verified_sender_email,recipients=[customer.email],body=email_body,reply_to=customer.email)
     mail.send(message)
 
 def confirm_gift(token):
@@ -169,7 +169,7 @@ def confirm_gift(token):
             """
             subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "swaj718@gmail.com"
-            message = Message(subject,"Provide your Gift delivery address",sender=sender_email,recipients=[customer.email],body=email_body)
+            message = Message(subject,sender=sender_email,recipients=[customer.email],body=email_body)
 
             mail.send(message)
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
