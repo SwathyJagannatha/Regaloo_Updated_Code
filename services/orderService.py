@@ -51,6 +51,10 @@ def compare_products(prod1,prod2):
 def create_order(data):
     custaccount_id = data.get("customeraccnt_id")
     product_ids = data.get('products', [])
+    gift_mess = data.get('gift_message')
+    recip_email = data.get('recipient_email')
+    recip_name = data.get('recipient_name')
+    sender_name = data.get('sender_name')
 
     # Fetch the CustomerAccount object
     custaccnt_id = select(CustomerAccount).where(CustomerAccount.id == custaccount_id)
@@ -90,7 +94,7 @@ def create_order(data):
         prod_arr.append(prod_obj)
 
     # Create the Order object
-    latest_order = Order(date=datetime.now(), customeraccnt_id=custaccount_id, total_amount=total_amt, status="Pending Order")
+    latest_order = Order(date=datetime.now(), customeraccnt_id=custaccount_id, gift_message = gift_mess, recipient_email = recip_email, recipient_name = recip_name, sender_name = sender_name,total_amount=total_amt, status="Pending Order",)
 
     # Append Product objects to the Order
     latest_order.products.extend(prod_arr)
