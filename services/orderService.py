@@ -94,7 +94,7 @@ def create_order(data):
         prod_arr.append(prod_obj)
 
     # Create the Order object
-    latest_order = Order(date=datetime.now(), customeraccnt_id=custaccount_id, gift_message = gift_mess, recipient_email = recip_email, recipient_name = recip_name, sender_name = sender_name,total_amount=total_amt, status="Pending Order",)
+    latest_order = Order(date=datetime.now(), customeraccnt_id=custaccount_id, gift_message = gift_mess, recipient_email = recip_email, recipient_name = recip_name, sender_name = sender_name,total_amount=total_amt, status="Pending Order")
 
     # Append Product objects to the Order
     latest_order.products.extend(prod_arr)
@@ -134,7 +134,7 @@ def send_confirm_email(custaccnt_id,order_id ):
     s = Serializer(current_app.config['SECRET_KEY'])
     token = s.dumps({'custaccnt_id': custaccnt_id,'order_id':order_id},salt = 'gift-confirm')
 
-    order = Order.query.get('order_id')
+    order = Order.query.get(order_id)
 
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
