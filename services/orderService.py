@@ -109,6 +109,10 @@ def create_order(data):
             "id": latest_order.id,
             "date": latest_order.date,
             "total_amount": latest_order.total_amount,
+            "gift_message": latest_order.gift_message,
+            "recipient_name": latest_order.recipient_name,
+            "recipient_email": latest_order.recipient_email,
+            "sender_name": latest_order.sender_name,
             "products": [{"id": p.id, "name": p.name, "price": p.price} for p in latest_order.products],
             "status": latest_order.status
         }
