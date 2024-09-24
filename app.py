@@ -32,7 +32,7 @@ def create_app(config_name):
 
     app.config.from_object(f'config.{config_name}')
 
-    app.config['SERVER_NAME'] = 'regaloo-updated-code.onrender.com'
+    #app.config['SERVER_NAME'] = 'regaloo-updated-code.onrender.com'
 
     mail.init_app(app)
     db.init_app(app)
