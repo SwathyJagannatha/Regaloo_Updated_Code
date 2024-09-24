@@ -39,7 +39,8 @@ def create_app(config_name):
     ma.init_app(app)
    
     cache.init_app(app)
-    CORS(app)
+    #CORS(app)
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://regaloo-updated-code.onrender.com"]}}, supports_credentials=True)
 
     blueprint_config(app)
 
