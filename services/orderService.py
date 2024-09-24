@@ -152,7 +152,7 @@ def send_confirm_email(custaccnt_id,order_id ):
     print(order.recipient_email)
     
     subject = f"Gift Confirmation for Order #{order_id}"
-    verified_sender_email = "swaj718@gmail.com"
+    verified_sender_email = "noreply@regalooo.com"
 
     message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],body=email_body,reply_to=customer.email)
     mail.send(message)
@@ -184,7 +184,7 @@ def confirm_gift(token):
             {address_link}
             """
             subject = f"Gift Confirmation for Order #{order.id}"
-            sender_email = "swaj718@gmail.com"
+            sender_email = "noreply@regalooo.com"
             message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
 
             mail.send(message)
