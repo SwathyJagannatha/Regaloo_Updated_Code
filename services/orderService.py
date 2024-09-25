@@ -202,7 +202,7 @@ def confirm_gift(token):
 
             sender_email_body = f"""
             Your Gift is on its Way!
-            
+
             Great news! The recipient has approved their address, and you've successfully set the shipping method. Your order is now on its way!
             Tracking Information:
             Carrier: UPS
@@ -223,7 +223,7 @@ def confirm_gift(token):
 
             subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "noreply@regalooo.com"
-            message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=email_body)
+            message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=sender_email_body)
             mail.send(message)
 
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
