@@ -248,19 +248,19 @@ def cancel_gift(token):
     except BadSignature:
         return {'Message':"Invalid Token"},400
 
-# def submit_address(token):
-#     html_content = render_template('form.html', token=token)
-#     # Create a response object with HTML content and correct MIME type
-#     response = make_response(html_content)
-#     response.headers['Content-Type'] = 'text/html'
-#     return response,201
-
 def submit_address(token):
-    # Construct the URL of the Vercel app with the token as a query parameter
-    vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
+    html_content = render_template('form.html', token=token)
+    # Create a response object with HTML content and correct MIME type
+    response = make_response(html_content)
+    response.headers['Content-Type'] = 'text/html'
+    return response,201
+
+# def submit_address(token):
+#     # Construct the URL of the Vercel app with the token as a query parameter
+#     vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
     
-    # Redirect the user to the Vercel app's shipping form page
-    return redirect(vercel_url, code=302)
+#     # Redirect the user to the Vercel app's shipping form page
+#     return redirect(vercel_url, code=302)
 
 def address_update(token):
         serializer = Serializer(current_app.config['SECRET_KEY'])
