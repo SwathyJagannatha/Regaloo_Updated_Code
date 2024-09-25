@@ -12,7 +12,7 @@ from itsdangerous import BadSignature, SignatureExpired
 from flask import current_app,url_for,render_template,request,make_response 
 from flask_mail import Message
 from extensions import mail
-from email.utils import make_msgid
+from flask import redirect
 
 def save(order_data):
     new_order = Order(date=date.today(), customer_id=order_data["customer_id"])
@@ -248,12 +248,19 @@ def cancel_gift(token):
     except BadSignature:
         return {'Message':"Invalid Token"},400
 
+# def submit_address(token):
+#     html_content = render_template('form.html', token=token)
+#     # Create a response object with HTML content and correct MIME type
+#     response = make_response(html_content)
+#     response.headers['Content-Type'] = 'text/html'
+#     return response,201
+
 def submit_address(token):
-    html_content = render_template('form.html', token=token)
-    # Create a response object with HTML content and correct MIME type
-    response = make_response(html_content)
-    response.headers['Content-Type'] = 'text/html'
-    return response,201
+    # Construct the URL of the Vercel app with the token as a query parameter
+    vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
+    
+    # Redirect the user to the Vercel app's shipping form page
+    return redirect(vercel_url, code=302)
 
 def address_update(token):
         serializer = Serializer(current_app.config['SECRET_KEY'])
