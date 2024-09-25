@@ -120,8 +120,7 @@ def create_order(data):
             "products": [{"id": p.id, "name": p.name, "price": p.price} for p in latest_order.products],
             "status": latest_order.status
         }
-    }, 201
-
+    }, 201  
 
 def send_confirm_email(custaccnt_id,order_id ):
     customeraccnt = CustomerAccount.query.get(custaccnt_id)
@@ -140,21 +139,38 @@ def send_confirm_email(custaccnt_id,order_id ):
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
     
     email_body = f"""
-    Hello {order.recipient_name},
-    Greetings to you!!Please confirm your gift acceptance by clicking the link below:
+    Dear {order.recipient_name},
+    This is a gift from {order.sender_name}, with message: {order.gift_message}!!
+
+    I’m pleased to inform you that a special surprise is on its way to you.
+    Please confirm your gift acceptance by clicking the link below:
     {confirm_link}
     If you do not want to accept this gift, please cancel by clicking here:
     {cancel_link}
 
-    This is gift from {order.sender_name} and this is their message to you {order.gift_message}!!
+    Best Regards,
+    Regaloo Team!!
     """
 
-    print(order.recipient_email)
+    email_body_sender = f"""
+    Dear {order.sender_name},
+
+    We’ve sent an email to your recipient, letting them know about their special gift. They’ll be prompted to securely provide their delivery address, once they accept the gift. 
+    Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.
+
+    Keep an eye on your inbox for updates we'll let you know as soon as the recipient approves and provides their address!
+    
+    Best Regards,
+    Regaloo Team!!
+    """
     
     subject = f"Gift Confirmation for Order #{order_id}"
     verified_sender_email = "noreply@regalooo.com"
 
     message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],body=email_body,reply_to=customer.email)
+    mail.send(message)
+
+    message = Message("Your gift is almost Ready!",sender=verified_sender_email,recipients=[customer.email],body=email_body_sender,reply_to=customer.email)
     mail.send(message)
 
 def confirm_gift(token):
@@ -163,8 +179,6 @@ def confirm_gift(token):
         data = serializer.loads(token, salt='gift-confirm', max_age=3600)  # expires in 1 hour - 3600
         order = Order.query.get(data['order_id'])
         if order:
-            ####### customer email update #######
-
             customeraccnt = CustomerAccount.query.get(order.customeraccnt_id)
             customer = Customer.query.get(customeraccnt.customer_id)
 
@@ -173,21 +187,45 @@ def confirm_gift(token):
             
             order.status = 'Confirmed'
             db.session.commit()
-            #return {"Message": "Gift has been confirmed successfully"},201
             address_link = url_for('order_bp.submit_address',token = token , _external=True)
 
             email_body = f"""
-            Hello {customer.name},
-            {order.gift_message}
-            Greetings to you!!Please provide your Shipping address for gift delivery by clicking the link below:
+            Hello {order.recipient_name},
+            
+            I'm pleased to inform you that a special surprise is on its way to you. 
+            To ensure seamless delivery, I kindly ask that you securely provide your address via the link below. 
+            Please note that your privacy is fully protected—your address will remain confidential and will not be visible to me or anyone else. 
+            Once submitted, you can relax and anticipate the arrival of your gift.
             
             {address_link}
             """
+
+            sender_email_body = f"""
+            Your Gift is on its Way!
+            
+            Great news! The recipient has approved their address, and you've successfully set the shipping method. Your order is now on its way!
+            Tracking Information:
+            Carrier: UPS
+            Tracking Number: 1Z12345E6205277936
+            Estimated Delivery: 10, 2024
+            We've sent all the details, including tracking information, to your email. Be sure to check it for updates. Your recipient has also received an email with tracking information, so they can follow the progress of their gift as well.
+
+            Thank you for choosing Regaloo to send your special gift!
+
+            Warm Regards,
+            Regaloo Team
+            """
+
             subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "noreply@regalooo.com"
             message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
-
             mail.send(message)
+
+            subject = f"Gift Confirmation for Order #{order.id}"
+            sender_email = "noreply@regalooo.com"
+            message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=email_body)
+            mail.send(message)
+
             return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
             return {"Message": "Order not found"},404
@@ -204,7 +242,7 @@ def cancel_gift(token):
        if order:
            order.status = 'Cancelled'
            db.session.commit()
-           return {"Message":"Alas ,Order for the gift has been cancelled!!"},201
+           return {"Message":"Alas,Gift delivery has been cancelled!!"},201
     except SignatureExpired:
         return {'Message':"The confirmation link has expired"},400
     except BadSignature:
