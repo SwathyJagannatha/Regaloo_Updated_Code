@@ -15,6 +15,11 @@ def find_all():
     all_products = db.session.execute(query).scalars().all()
     return all_products
 
+def find_by_id(id):
+    query = select(Product).where(Product.id == id)
+    product = db.session.execute(query).scalars().all()
+    return product
+
 def search_product(search_term):
     query = select(Product).where(Product.name.like(f'%{search_term}%'))
     search_products = db.session.execute(query).scalars().all()

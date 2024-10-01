@@ -14,7 +14,7 @@ class Order(Base):
     delivery_address: Mapped[str] = mapped_column(db.String(150),nullable=True)
     total_amount: Mapped[float] = mapped_column(db.Float)
 
-    recipient_email:Mapped[str] = mapped_column(db.String(255),nullable=False,unique=True)
+    recipient_email:Mapped[str] = mapped_column(db.String(255),nullable=False)
     recipient_name: Mapped[str] = mapped_column(db.String(255),nullable=False)
     sender_name: Mapped[str] = mapped_column(db.String(255),nullable=False)
     gift_message: Mapped[str] = mapped_column(db.String(255),nullable=False)

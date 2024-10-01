@@ -26,6 +26,12 @@ def search_product():
     searched_item = productService.search_product(search_term)
     return products_schema.jsonify(searched_item)
 
+def find_by_id(id):
+    products = productService.find_by_id(id)
+    if not products:
+        return {"Message" : "Product with specified id doesnt exist"},404
+    return products_schema.jsonify(products),200
+
 def delete_product(id):
     response,status = productService.delete_product(id)
     if status!=201:

@@ -71,14 +71,14 @@ def create_order(data):
     existing_order = select(Order).where(Order.customeraccnt_id == custaccount_id)
     orders_obj = db.session.execute(existing_order).scalars().all()
 
-    for order in orders_obj:
-        existing_prods = [
-            { "id" : prod.id , "quantity": prod.stock_qty, "description": prod.description}
-            for prod in order.products
-        ]
+    # for order in orders_obj:
+    #     existing_prods = [
+    #         { "id" : prod.id , "quantity": prod.stock_qty, "description": prod.description}
+    #         for prod in order.products
+    #     ]
 
-        if compare_products(existing_prods,product_ids):
-            return {"Message": "Duplicate order found for same customer id with same product list"},404
+    #     if compare_products(existing_prods,product_ids):
+    #         return {"Message": "Duplicate order found for same customer id with same product list"},404
 
     # List to hold Product objects
     prod_arr = []
@@ -138,33 +138,72 @@ def send_confirm_email(custaccnt_id,order_id ):
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
     
+    # email_body = f"""
+    # Dear {order.recipient_name},
+    # This is a gift from {order.sender_name}, with message: {order.gift_message}!!
+
+    # I’m pleased to inform you that a special surprise is on its way to you.
+    # Please confirm your gift acceptance by clicking the link below:
+    # {confirm_link}
+    # If you do not want to accept this gift, please cancel by clicking here:
+    # {cancel_link}
+
+    # Best Regards,
+    # Regaloo Team!!
+    # """
+
+    # HTML Email Body with buttons
     email_body = f"""
-    Dear {order.recipient_name},
-    This is a gift from {order.sender_name}, with message: {order.gift_message}!!
+    <html>
+    <body>
+        <p>Dear {order.recipient_name},</p>
+        <p>This is a gift from {order.sender_name}, with message: {order.gift_message}!!</p>
+        <p>I’m pleased to inform you that a special surprise is on its way to you.</p>
+        <p>Please confirm your gift acceptance by clicking the button below:</p>
 
-    I’m pleased to inform you that a special surprise is on its way to you.
-    Please confirm your gift acceptance by clicking the link below:
-    {confirm_link}
-    If you do not want to accept this gift, please cancel by clicking here:
-    {cancel_link}
+        <p>
+            <a href="{confirm_link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: green; text-decoration: none; border-radius: 5px;">Confirm Gift</a>
+        </p>
 
-    Best Regards,
-    Regaloo Team!!
+        <p>If you do not want to accept this gift, please cancel by clicking the button below:</p>
+
+        <p>
+            <a href="{cancel_link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: red; text-decoration: none; border-radius: 5px;">Cancel Gift</a>
+        </p>
+
+        <p>Best Regards,</p>
+        <p>Regaloo Team</p>
+    </body>
+    </html>
     """
 
+    # email_body_sender = f"""
+    # Dear {order.sender_name},
+
+    # We’ve sent an email to your recipient, letting them know about their special gift. They’ll be prompted to securely provide their delivery address, once they accept the gift. 
+    # Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.
+
+    # Keep an eye on your inbox for updates we'll let you know as soon as the recipient approves and provides their address!
+    
+    # Best Regards,
+    # Regaloo Team!!
+    # """
+
+    # HTML Email body for sender
     email_body_sender = f"""
-    Dear {order.sender_name},
-
-    We’ve sent an email to your recipient, letting them know about their special gift. They’ll be prompted to securely provide their delivery address, once they accept the gift. 
-    Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.
-
-    Keep an eye on your inbox for updates we'll let you know as soon as the recipient approves and provides their address!
-    
-    Best Regards,
-    Regaloo Team!!
+    <html>
+    <body>
+        <p>Dear {order.sender_name},</p>
+        <p>We’ve sent an email to your recipient, letting them know about their special gift. 
+        They’ll be prompted to securely provide their delivery address, once they accept the gift.</p>
+        <p>Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.</p>
+        <p>Best Regards,</p>
+        <p>Regaloo Team</p>
+    </body>
+    </html>
     """
     
-    subject = f"Gift Confirmation for Order #{order_id}"
+    subject = f"{order.sender_name} has sent you a gift!!"
     verified_sender_email = "noreply@regalooo.com"
 
     message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],body=email_body,reply_to=customer.email)
@@ -187,18 +226,20 @@ def confirm_gift(token):
             
             order.status = 'Confirmed'
             db.session.commit()
-            address_link = url_for('order_bp.submit_address',token = token , _external=True)
 
-            email_body = f"""
-            Hello {order.recipient_name},
+
+            #address_link = url_for('order_bp.submit_address',token = token , _external=True)
+
+            # email_body = f"""
+            # Hello {order.recipient_name},
             
-            I'm pleased to inform you that a special surprise is on its way to you. 
-            To ensure seamless delivery, I kindly ask that you securely provide your address via the link below. 
-            Please note that your privacy is fully protected—your address will remain confidential and will not be visible to me or anyone else. 
-            Once submitted, you can relax and anticipate the arrival of your gift.
+            # I'm pleased to inform you that a special surprise is on its way to you. 
+            # To ensure seamless delivery, I kindly ask that you securely provide your address via the link below. 
+            # Please note that your privacy is fully protected—your address will remain confidential and will not be visible to me or anyone else. 
+            # Once submitted, you can relax and anticipate the arrival of your gift.
             
-            {address_link}
-            """
+            # {address_link}
+            # """
 
             sender_email_body = f"""
             Your Gift is on its Way!
@@ -216,17 +257,18 @@ def confirm_gift(token):
             Regaloo Team
             """
 
-            subject = f"Gift Confirmation for Order #{order.id}"
-            sender_email = "noreply@regalooo.com"
-            message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
-            mail.send(message)
+            # subject = f"Gift Confirmation for Order #{order.id}"
+            # sender_email = "noreply@regalooo.com"
+            # message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
+            # mail.send(message)
 
-            subject = f"Gift Confirmation for Order #{order.id}"
             sender_email = "noreply@regalooo.com"
             message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=sender_email_body)
             mail.send(message)
 
-            return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
+            return redirect(url_for('order_bp.submit_address',token=token))
+
+            #return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
             return {"Message": "Order not found"},404
     except SignatureExpired:
@@ -259,7 +301,7 @@ def submit_address(token):
 #     # Construct the URL of the Vercel app with the token as a query parameter
 #     vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
     
-#     # Redirect the user to the Vercel app's shipping form page
+#     # Redirect the user to the Vercel app's shipping form pageupdated
 #     return redirect(vercel_url, code=302)
 
 def address_update(token):

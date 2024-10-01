@@ -62,7 +62,6 @@ def find_all():
     
 def find_by_id(id):
     orders = orderService.find_by_id(id)
-
     if not orders:
         return {"Message" : "Order with specified id doesnt exist"},404
     return orders_schema.jsonify(orders),200
