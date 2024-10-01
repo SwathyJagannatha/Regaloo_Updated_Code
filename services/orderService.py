@@ -206,10 +206,10 @@ def send_confirm_email(custaccnt_id,order_id ):
     subject = f"{order.sender_name} has sent you a gift!!"
     verified_sender_email = "noreply@regalooo.com"
 
-    message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],body=email_body,reply_to=customer.email)
+    message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],html=email_body,reply_to=customer.email)
     mail.send(message)
 
-    message = Message("Your gift is almost Ready!",sender=verified_sender_email,recipients=[customer.email],body=email_body_sender,reply_to=customer.email)
+    message = Message("Your gift is almost Ready!",sender=verified_sender_email,recipients=[customer.email],html=email_body_sender,reply_to=customer.email)
     mail.send(message)
 
 def confirm_gift(token):
