@@ -40,8 +40,8 @@ def send_confirm_email(custaccnt_id,order_id):
 
 
 def confirm_gift(token):
-    response,status = orderService.confirm_gift(token)
-    return jsonify(response), status
+    response = orderService.confirm_gift(token)
+    return response
 
 def cancel_gift(token):
     response,status = orderService.cancel_gift(token)
