@@ -44,8 +44,8 @@ def confirm_gift(token):
     return response
 
 def cancel_gift(token):
-    response,status = orderService.cancel_gift(token)
-    return jsonify(response), status
+    response = orderService.cancel_gift(token)
+    return jsonify(response)
 
 def address_update(token):
     response,status = orderService.address_update(token)
@@ -54,6 +54,10 @@ def address_update(token):
 def submit_address(token):
     response,status = orderService.submit_address(token)
     return response
+
+def cancel_gift_redirect():
+    response = orderService.cancel_gift_redirect()
+    return jsonify(response)
 
 @cache.cached(timeout=60)
 def find_all():

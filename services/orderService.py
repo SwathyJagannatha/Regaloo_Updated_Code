@@ -248,9 +248,6 @@ def confirm_gift(token):
             mail.send(message)
 
             return submit_address(token)
-            # return redirect(url_for('order_bp.submit_address',token=token))
-
-            #return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
             return {"Message": "Order not found"},404
     except SignatureExpired:
@@ -266,7 +263,8 @@ def cancel_gift(token):
        if order:
            order.status = 'Cancelled'
            db.session.commit()
-           return {"Message":"Alas,Gift delivery has been cancelled!!"},201
+           #return {"Message":"Alas,Gift delivery has been cancelled!!"},201
+           return cancel_gift_redirect()
     except SignatureExpired:
         return {'Message':"The confirmation link has expired"},400
     except BadSignature:
@@ -282,6 +280,13 @@ def cancel_gift(token):
 def submit_address(token):
     # Construct the URL of the Vercel app with the token as a query parameter
     vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
+    
+    # Redirect the user to the Vercel app's shipping form pageupdated
+    return redirect(vercel_url, code=302)
+
+def cancel_gift_redirect():
+    # Construct the URL of the Vercel app with the token as a query parameter
+    vercel_url = f"https://regaloowebsite.vercel.app"
     
     # Redirect the user to the Vercel app's shipping form pageupdated
     return redirect(vercel_url, code=302)
