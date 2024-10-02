@@ -227,20 +227,6 @@ def confirm_gift(token):
             order.status = 'Confirmed'
             db.session.commit()
 
-
-            #address_link = url_for('order_bp.submit_address',token = token , _external=True)
-
-            # email_body = f"""
-            # Hello {order.recipient_name},
-            
-            # I'm pleased to inform you that a special surprise is on its way to you. 
-            # To ensure seamless delivery, I kindly ask that you securely provide your address via the link below. 
-            # Please note that your privacy is fully protected—your address will remain confidential and will not be visible to me or anyone else. 
-            # Once submitted, you can relax and anticipate the arrival of your gift.
-            
-            # {address_link}
-            # """
-
             sender_email_body = f"""
             Your Gift is on its Way!
 
@@ -257,16 +243,12 @@ def confirm_gift(token):
             Regaloo Team
             """
 
-            # subject = f"Gift Confirmation for Order #{order.id}"
-            # sender_email = "noreply@regalooo.com"
-            # message = Message(subject,sender=sender_email,recipients=[order.recipient_email],body=email_body)
-            # mail.send(message)
-
             sender_email = "noreply@regalooo.com"
             message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=sender_email_body)
             mail.send(message)
 
-            return redirect(url_for('order_bp.submit_address',token=token))
+            return submit_address(token)
+            # return redirect(url_for('order_bp.submit_address',token=token))
 
             #return {"Message": "Gift has been confirmed successfully, and Address email sent"}, 201
         else:
@@ -290,19 +272,19 @@ def cancel_gift(token):
     except BadSignature:
         return {'Message':"Invalid Token"},400
 
-def submit_address(token):
-    html_content = render_template('form.html', token=token)
-    # Create a response object with HTML content and correct MIME type
-    response = make_response(html_content)
-    response.headers['Content-Type'] = 'text/html'
-    return response,201
-
 # def submit_address(token):
-#     # Construct the URL of the Vercel app with the token as a query parameter
-#     vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
+#     html_content = render_template('form.html', token=token)
+#     # Create a response object with HTML content and correct MIME type
+#     response = make_response(html_content)
+#     response.headers['Content-Type'] = 'text/html'
+#     return response,201
+
+def submit_address(token):
+    # Construct the URL of the Vercel app with the token as a query parameter
+    vercel_url = f"https://regaloowebsite.vercel.app/shipping?token={token}"
     
-#     # Redirect the user to the Vercel app's shipping form pageupdated
-#     return redirect(vercel_url, code=302)
+    # Redirect the user to the Vercel app's shipping form pageupdated
+    return redirect(vercel_url, code=302)
 
 def address_update(token):
         serializer = Serializer(current_app.config['SECRET_KEY'])
