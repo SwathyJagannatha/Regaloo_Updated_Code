@@ -55,8 +55,8 @@ def submit_address(token):
     response,status = orderService.submit_address(token)
     return response
 
-def cancel_gift_redirect():
-    response = orderService.cancel_gift_redirect()
+def cancel_gift_redirect(token):
+    response = orderService.cancel_gift_redirect(token)
     return jsonify(response)
 
 @cache.cached(timeout=60)

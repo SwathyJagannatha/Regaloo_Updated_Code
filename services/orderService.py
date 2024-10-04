@@ -284,7 +284,7 @@ def submit_address(token):
     # Redirect the user to the Vercel app's shipping form pageupdated
     return redirect(vercel_url, code=302)
 
-def cancel_gift_redirect():
+def cancel_gift_redirect(token):
     # Construct the URL of the Vercel app with the token as a query parameter
     vercel_url = f"https://regaloowebsite.vercel.app"
     
@@ -294,13 +294,18 @@ def cancel_gift_redirect():
 def address_update(token):
         serializer = Serializer(current_app.config['SECRET_KEY'])
         try:
-            address = request.form.get('Address')
-            print(address)
+            address = request.json.get('address1')
+            address2 = request.json.get('address2')
+            city = request.json.get('city')
+            state = request.json.get('state')
+            zip_code = request.json.get('zipCode')
+            email = request.json.get('email')
+            
             data = serializer.loads(token, salt='gift-confirm',max_age=3600) 
             order = Order.query.get(data['order_id'])
             if order:
                 order.status = 'Confirmed'
-                order.delivery_address = address
+                order.delivery_address = f" {address}, {address2}, {city}, {state}, {zip_code}"
                 db.session.commit()
                 db.session.refresh(order)
                 return {"Message":"Address for order delivery successfully updated!"},201

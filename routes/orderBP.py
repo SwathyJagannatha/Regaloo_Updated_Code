@@ -23,7 +23,5 @@ order_blueprint.route('/<int:id>',methods=['PUT'])(update_order)
 order_blueprint.route('/confirm_gift/<token>',methods=['GET'])(confirm_gift)
 order_blueprint.route('/cancel_gift/<token>',methods=['GET'])(cancel_gift)
 
-
-order_blueprint.route('/submit_address/<token>',methods=['GET'])(submit_address)
-order_blueprint.route('/cancel_gift_redirect',methods=['GET'])(cancel_gift_redirect)
+order_blueprint.route('/cancel_gift_redirect/<token>',methods=['GET'])(cancel_gift_redirect)
 
