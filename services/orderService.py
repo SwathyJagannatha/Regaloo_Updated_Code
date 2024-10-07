@@ -138,67 +138,72 @@ def send_confirm_email(custaccnt_id,order_id ):
     confirm_link = url_for('order_bp.confirm_gift',token = token , _external=True)
     cancel_link = url_for('order_bp.cancel_gift',token = token, _external = True)
     
-    # email_body = f"""
-    # Dear {order.recipient_name},
-    # This is a gift from {order.sender_name}, with message: {order.gift_message}!!
-
-    # I’m pleased to inform you that a special surprise is on its way to you.
-    # Please confirm your gift acceptance by clicking the link below:
-    # {confirm_link}
-    # If you do not want to accept this gift, please cancel by clicking here:
-    # {cancel_link}
-
-    # Best Regards,
-    # Regaloo Team!!
-    # """
-
     # HTML Email Body with buttons
     email_body = f"""
     <html>
-    <body>
-        <p>Dear {order.recipient_name},</p>
-        <p>This is a gift from {order.sender_name}, with message: {order.gift_message}!!</p>
-        <p>I’m pleased to inform you that a special surprise is on its way to you.</p>
-        <p>Please confirm your gift acceptance by clicking the button below:</p>
+      <body>
+	   <div style="width: 600px; height: 554px; background-color: white; padding: 20px; font-family: Arial, sans-serif;">
+        <!-- Logo or Image -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://via.placeholder.com/126x55" alt="Logo" style="width: 126px; height: 55px;" />
+        </div>
 
-        <p>
-            <a href="{confirm_link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: green; text-decoration: none; border-radius: 5px;">Confirm Gift</a>
-        </p>
+        <!-- Greeting and Message -->
+        <div style="padding-bottom: 10px;">
+            <p style="font-size: 16px; font-weight: bold; margin: 0;">Dear {order.recipient_name},</p>
+            <p style="font-size: 14px; margin: 0;">This is a gift from {order.sender_name}, with message : {order.gift_message}.</p>
+        </div>
 
-        <p>If you do not want to accept this gift, please cancel by clicking the button below:</p>
+        <!-- Accept Button Section -->
+        <div style="padding-top: 20px;">
+	        <p style="font-size: 14px;">I’m pleased to inform you that a special surprise is on its way to you.</p>
+            <p style="font-size: 14px;">Please confirm your gift acceptance by clicking the button below:</p>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="{confirm_link}" style="display: inline-block; background-color: #4ca330; color: #f1faeb; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold;">Accept Gift & Continue</a>
+            </div>
+        </div>
 
-        <p>
-            <a href="{cancel_link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: red; text-decoration: none; border-radius: 5px;">Cancel Gift</a>
-        </p>
+        <!-- Decline Button Section -->
+        <div style="padding-top: 20px;">
+            <p style="font-size: 14px;">If you do not want to accept this gift, please cancel by clicking the button below:</p>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="{cancel_link}" style="display: inline-block; color: #4ca330; padding: 10px 20px; text-decoration: none; border: 2px solid #4ca330; border-radius: 5px; font-size: 14px; font-weight: bold;">Decline Gift</a>
+            </div>
+        </div>
 
-        <p>Best Regards,</p>
-        <p>Regaloo Team</p>
-    </body>
+        <!-- Closing -->
+        <div style="padding-top: 40px;">
+            <p style="font-size: 14px;">Best Regards,</p>
+            <p style="font-size: 14px;">Regalooo Team</p>
+        </div>
+      </div>
+      </body>
+   
     </html>
     """
-
-    # email_body_sender = f"""
-    # Dear {order.sender_name},
-
-    # We’ve sent an email to your recipient, letting them know about their special gift. They’ll be prompted to securely provide their delivery address, once they accept the gift. 
-    # Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.
-
-    # Keep an eye on your inbox for updates we'll let you know as soon as the recipient approves and provides their address!
-    
-    # Best Regards,
-    # Regaloo Team!!
-    # """
 
     # HTML Email body for sender
     email_body_sender = f"""
     <html>
     <body>
-        <p>Dear {order.sender_name},</p>
-        <p>We’ve sent an email to your recipient, letting them know about their special gift. 
-        They’ll be prompted to securely provide their delivery address, once they accept the gift.</p>
-        <p>Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.</p>
-        <p>Best Regards,</p>
-        <p>Regaloo Team</p>
+    <div style="width: 600px; height: 554px; background-color: white; padding: 20px; font-family: Arial, sans-serif;">
+        <div style="padding-bottom: 10px;">
+            <p style="font-size: 16px; font-weight: bold; margin: 0;">Dear {order.sender_name},</p>
+            <p style="font-size: 14px; margin: 0;">We’ve sent an email to your recipient, letting them know about their special gift. 
+            They’ll be prompted to securely provide their delivery address, once they accept the gift.</p>
+        </div>
+
+        <div style="padding-top: 20px;">
+	        <p style="font-size: 14px;">Once they’ve confirmed their details, we'll notify you and guide you through the final steps to ship the gift.
+            Keep an eye on your inbox for updates – we’ll notify you as soon as the recipient approves and provides their address!</p>
+        </div>
+
+        <!-- Closing -->
+        <div style="padding-top: 40px;">
+            <p style="font-size: 14px;">Best Regards,</p>
+            <p style="font-size: 14px;">Regalooo Team</p>
+        </div>
+    </div>
     </body>
     </html>
     """
@@ -243,9 +248,9 @@ def confirm_gift(token):
             Regaloo Team
             """
 
-            sender_email = "noreply@regalooo.com"
-            message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=sender_email_body)
-            mail.send(message)
+            # sender_email = "noreply@regalooo.com"
+            # message = Message("Your Gift is on its Way",sender=sender_email,recipients=[customer.email],body=sender_email_body)
+            # mail.send(message)
 
             return submit_address(token)
         else:
@@ -263,19 +268,11 @@ def cancel_gift(token):
        if order:
            order.status = 'Cancelled'
            db.session.commit()
-           #return {"Message":"Alas,Gift delivery has been cancelled!!"},201
-           return cancel_gift_redirect()
+           return cancel_gift_redirect(token)
     except SignatureExpired:
         return {'Message':"The confirmation link has expired"},400
     except BadSignature:
         return {'Message':"Invalid Token"},400
-
-# def submit_address(token):
-#     html_content = render_template('form.html', token=token)
-#     # Create a response object with HTML content and correct MIME type
-#     response = make_response(html_content)
-#     response.headers['Content-Type'] = 'text/html'
-#     return response,201
 
 def submit_address(token):
     # Construct the URL of the Vercel app with the token as a query parameter
@@ -286,7 +283,7 @@ def submit_address(token):
 
 def cancel_gift_redirect(token):
     # Construct the URL of the Vercel app with the token as a query parameter
-    vercel_url = f"https://regaloowebsite.vercel.app"
+    vercel_url = f"https://regaloowebsite.vercel.app?token={token}"
     
     # Redirect the user to the Vercel app's shipping form pageupdated
     return redirect(vercel_url, code=302)
@@ -304,11 +301,86 @@ def address_update(token):
             data = serializer.loads(token, salt='gift-confirm',max_age=3600) 
             order = Order.query.get(data['order_id'])
             if order:
+
+                customeraccnt = CustomerAccount.query.get(order.customeraccnt_id)
+                customer = Customer.query.get(customeraccnt.customer_id)
+
                 order.status = 'Confirmed'
                 order.delivery_address = f" {address}, {address2}, {city}, {state}, {zip_code}"
                 db.session.commit()
                 db.session.refresh(order)
-                return {"Message":"Address for order delivery successfully updated!"},201
+                # return {"Message":"Address for order delivery successfully updated!"},201
+
+                # email to recipient saying address succesfully submitted 
+                # HTML Email Body with buttons
+                email_body = f"""
+                <html>
+                  <body>
+	                <div style="width: 600px; height: 554px; background-color: white; padding: 20px; font-family: Arial, sans-serif;">
+        
+                    <!-- Greeting and Message -->
+                    <div style="padding-bottom: 10px;">
+                        <p style="font-size: 16px; font-weight: bold; margin: 0;">Dear {order.recipient_name},</p>
+                        <p style="font-size: 14px; margin: 0;">Your Gift is almost Ready!</p>
+                    </div>
+
+                    <div style="padding-top: 20px;">
+	                    <p style="font-size: 14px;">Thanks for providing your delivery details!
+                        The sender will now complete the final steps to ship your gift.
+                        Stay tuned – we’ll send you an email with tracking information as soon as the gift is on its way. 
+                        Keep an eye on your inbox for updates!</p>
+                    </div>
+
+                    <div style="padding-top: 20px;">
+                        <div style="text-align: center; margin-top: 10px;">
+                        <a href="https://regaloowebsite.vercel.app/" style="display: inline-block; color: #4ca330; padding: 10px 20px; text-decoration: none; border: 2px solid #4ca330; border-radius: 5px; font-size: 14px; font-weight: bold;">Go Home</a>
+                    </div>
+
+                    <!-- Closing -->
+                    <div style="padding-top: 40px;">
+                        <p style="font-size: 14px;">Best Regards,</p>
+                        <p style="font-size: 14px;">Regalooo Team</p>
+                    </div>
+                    </div>
+                  </body>
+                </html>
+                """
+
+              # HTML Email body for sender
+                email_body_sender = f"""
+                <html>
+                <body>
+                    <div style="width: 600px; height: 554px; background-color: white; padding: 20px; font-family: Arial, sans-serif;">
+                        <div style="padding-bottom: 10px;">
+                            <p style="font-size: 16px; font-weight: bold; margin: 0;">Dear {order.sender_name},</p>
+                            <p style="font-size: 14px; margin: 0;">Your recipient provided their address successfully.
+                        </div>
+
+                        <div style="padding-top: 20px;">
+	                        <p style="font-size: 14px;">You can submit the order for shipping through this link: </p>
+                            <a href="https://regaloowebsite.vercel.app/orders" style="display: inline-block; color: #4ca330; padding: 10px 20px; text-decoration: none; border: 2px solid #4ca330; border-radius: 5px; font-size: 14px; font-weight: bold;">Place Order</a>
+                        </div>
+
+                        <!-- Closing -->
+                        <div style="padding-top: 40px;">
+                            <p style="font-size: 14px;">Best Regards,</p>
+                            <p style="font-size: 14px;">Regalooo Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
+                subject = f"{order.sender_name} has sent you a gift!!"
+                verified_sender_email = "noreply@regalooo.com"
+
+                message = Message(subject,sender=verified_sender_email,recipients=[order.recipient_email],html=email_body)
+                mail.send(message)
+
+                message = Message("Your gift is almost Ready!",sender=verified_sender_email,recipients=[customer.email],html=email_body_sender,reply_to=customer.email)
+                mail.send(message)
+
+                # email to sender 
             else:
                 return {"Message": "Order not found"},404
         except SignatureExpired:
