@@ -381,6 +381,7 @@ def address_update(token):
                 mail.send(message)
 
                 # email to sender 
+                return {"Message": "Address for order delivery successfully updated!"}, 201
             else:
                 return {"Message": "Order not found"},404
         except SignatureExpired:
