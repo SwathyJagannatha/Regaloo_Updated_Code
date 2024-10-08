@@ -45,19 +45,19 @@ def confirm_gift(token):
 
 def cancel_gift(token):
     response = orderService.cancel_gift(token)
-    return jsonify(response)
+    return response
 
 def address_update(token):
-    response,status = orderService.address_update(token)
-    return jsonify(response)
+    response = orderService.address_update(token)
+    return response
 
 def submit_address(token):
-    response,status = orderService.submit_address(token)
+    response = orderService.submit_address(token)
     return response
 
 def cancel_gift_redirect(token):
     response = orderService.cancel_gift_redirect(token)
-    return jsonify(response)
+    return response
 
 @cache.cached(timeout=60)
 def find_all():
