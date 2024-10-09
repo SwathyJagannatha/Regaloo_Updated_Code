@@ -395,7 +395,14 @@ def address_update(token):
 #         order.status = 'Shipped'
 #     pass
 
-def send_shipping_email(order_id):
+def send_shipping_email():
+
+    data = request.get_json()
+    order_id = data.get('order_id')
+
+    if not order_id:
+        return {"Message": "Order ID is required"}, 400
+    
     order = Order.query.get(order_id)
     if order:
         if order.status == "Shipped":

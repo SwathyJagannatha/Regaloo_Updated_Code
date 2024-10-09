@@ -59,8 +59,8 @@ def cancel_gift_redirect(token):
     response = orderService.cancel_gift_redirect(token)
     return response
 
-def send_shipping_email(order_id):
-    response = orderService.send_shipping_email(order_id)
+def send_shipping_email():
+    response = orderService.send_shipping_email()
     return response
 
 @cache.cached(timeout=60)
