@@ -389,6 +389,46 @@ def address_update(token):
         except BadSignature:
             return {'Message':"Invalid Token"},400
 
+# def complete_shipping(order_id):
+#     order = Order.query.get(order_id)
+#     if order:
+#         order.status = 'Shipped'
+#     pass
+
+def send_shipping_email(order_id):
+    order = Order.query.get(order_id)
+    if order:
+        if order.status == "Shipped":
+           # Email body for the recipient with tracking details
+            recipient_email_body = f"""
+            <html>
+            <body>
+            <p>Dear {order.recipient_name},</p>
+            <p>Your order has been shipped! You can track your gift with the details below:</p>
+            <ul>
+                <li>Carrier: UPS</li>
+                <li>Tracking Number: 1Z12345E6205277936</li>
+                <li>Estimated Delivery: '10/22/2024'</li>
+            </ul>
+            <p>Thank you for choosing Regaloo!</p>
+            <p>Best regards,</p>
+            <p>Regaloo Team</p>
+            </body>
+            </html>
+            """
+
+             # Send the email to the recipient
+            verified_sender_email = "noreply@regalooo.com"
+            message = Message("Your Gift is on its Way!", sender=verified_sender_email, recipients=[order.recipient_email], html=recipient_email_body)
+            mail.send(message)
+
+            return {"Message": "Shipping email sent successfully!"}, 200
+
+        else:
+            return {"Message": "Order is not marked as shipped!"}, 400
+    else:
+        return {"Message": "Order not found!"}, 404 
+
 def find_all():
     query = select(Order)
     all_orders = db.session.execute(query).scalars().all()
