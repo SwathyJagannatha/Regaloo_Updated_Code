@@ -389,23 +389,24 @@ def address_update(token):
         except BadSignature:
             return {'Message':"Invalid Token"},400
 
-# def complete_shipping(order_id):
-#     order = Order.query.get(order_id)
-#     if order:
-#         order.status = 'Shipped'
-#     pass
-
 def send_shipping_email():
 
     data = request.get_json()
+    print(data)
     order_id = data.get('order_id')
+
+    print(order_id)
 
     if not order_id:
         return {"Message": "Order ID is required"}, 400
     
     order = Order.query.get(order_id)
+
     if order:
-        if order.status == "Shipped":
+            order.status == "Shipped"
+            db.session.commit()  # Commit the status change to the database
+            db.session.refresh(order)  # Refresh the order instance
+
            # Email body for the recipient with tracking details
             recipient_email_body = f"""
             <html>
@@ -429,10 +430,7 @@ def send_shipping_email():
             message = Message("Your Gift is on its Way!", sender=verified_sender_email, recipients=[order.recipient_email], html=recipient_email_body)
             mail.send(message)
 
-            return {"Message": "Shipping email sent successfully!"}, 200
-
-        else:
-            return {"Message": "Order is not marked as shipped!"}, 400
+            return {"Message": "Order Shipped and email sent successfully!"}, 200
     else:
         return {"Message": "Order not found!"}, 404 
 
@@ -474,6 +472,7 @@ def update_order(id,data):
 
         order.date = data.get("date",order.date)
         order.customer_id = data.get("customer_id",order.customer_id)
+        order.status = data.get("status",order.status)
         db.session.commit()
         return order 
     except:
