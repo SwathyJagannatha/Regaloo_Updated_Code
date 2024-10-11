@@ -403,6 +403,9 @@ def send_shipping_email():
     order = Order.query.get(order_id)
 
     if order:
+            customeraccnt = CustomerAccount.query.get(order.customeraccnt_id)
+            customer = Customer.query.get(customeraccnt.customer_id)
+
             order.status == "Shipped"
             db.session.commit()  # Commit the status change to the database
             db.session.refresh(order)  # Refresh the order instance
@@ -425,9 +428,43 @@ def send_shipping_email():
             </html>
             """
 
+            # HTML Email body for sender
+            email_body_sender = f"""
+                <html>
+                <body>
+                    <div style="width: 600px; height: 554px; background-color: white; padding: 20px; font-family: Arial, sans-serif;">
+                        <div style="padding-bottom: 10px;">
+                            <p style="font-size: 16px; font-weight: bold; margin: 0;">Your Gift is on its Way!</p>
+                            <p style="font-size: 14px; margin: 0;">Your recipient will receive an email with tracking information so they can 
+                            follow the progress of their gift. You will also receive an update once the package has been delivered.</p>
+                            <p> EStimated Delivery : 10/22/2024</p>
+                        </div> 
+
+                        <div style="padding-top: 20px;">
+	                        <p style="font-size: 14px;">Thank you for choosing Regaloo to send your special gift!!</p>
+                        </div>
+
+                        <div style="padding-top: 20px;">
+                        <div style="text-align: center; margin-top: 10px;">
+                            <a href="https://regaloowebsite.vercel.app/" style="display: inline-block; color: #4ca330; padding: 10px 20px; text-decoration: none; border: 2px solid #4ca330; border-radius: 5px; font-size: 14px; font-weight: bold;">Go Home</a>
+                        </div>
+                
+                        <!-- Closing -->
+                        <div style="padding-top: 40px;">
+                            <p style="font-size: 14px;">Best Regards,</p>
+                            <p style="font-size: 14px;">Regalooo Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
              # Send the email to the recipient
             verified_sender_email = "noreply@regalooo.com"
             message = Message("Your Gift is on its Way!", sender=verified_sender_email, recipients=[order.recipient_email], html=recipient_email_body)
+            mail.send(message)
+
+            message = Message("Your gift is almost Ready!",sender=verified_sender_email,recipients=[customer.email],html=email_body_sender,reply_to=customer.email)
             mail.send(message)
 
             return {"Message": "Order Shipped and email sent successfully!"}, 200
